@@ -3,6 +3,7 @@ package karting.controllers;
 import karting.entities.reservaEntity;
 import karting.services.reservaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,28 @@ public class reservaController {
     public String crearReserva(@RequestBody reservaEntity reserva) {
         reservaService.crearReserva(reserva);
         return "Reserva creada exitosamente";
+    }
+
+    @PostMapping("/descuento")
+    public ResponseEntity<reservaEntity> aplicarDescuento(@RequestBody reservaEntity reserva) {
+        reservaService.aplicarDescuento(reserva);
+        return ResponseEntity.ok(reserva);
+    }
+
+    @PostMapping("/tarifa")
+    public ResponseEntity<reservaEntity> aplicarTarifa(@RequestBody reservaEntity reserva) {
+        reservaService.aplicarTarifa(reserva);
+        return ResponseEntity.ok(reserva);
+    }
+
+    @PutMapping("/confirmar/{id}")
+    public ResponseEntity<reservaEntity> confirmarReserva(@PathVariable Long id) {
+        try {
+            reservaEntity reservaConfirmada = reservaService.confirmarReserva(id);
+            return ResponseEntity.ok(reservaConfirmada);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/")

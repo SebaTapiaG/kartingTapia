@@ -21,7 +21,8 @@ public class comprobanteEntity {
     @Column(unique = true, nullable = false)
     private long idComprobante;
 
-    private String idReserva;
+    private String rutCliente;
+    private Long idReserva;
     private Date fechaEmision;
     private int descuento;
     private int montoTotal;

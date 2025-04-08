@@ -2,8 +2,10 @@ package karting.services;
 
 
 import karting.entities.clienteEntity;
+import karting.entities.comprobanteEntity;
 import karting.entities.reservaEntity;
 import karting.repositories.clienteRepository;
+import karting.repositories.comprobanteRepository;
 import karting.repositories.reservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,9 @@ public class reservaService {
 
     @Autowired
     clienteRepository clienteRepository;
+
+    @Autowired
+    comprobanteRepository comprobanteRepository;
 
     public void crearReserva(reservaEntity reserva) {
         // Lógica para crear una reserva
@@ -63,7 +68,15 @@ public class reservaService {
         return true;
     }
 
-
+    //Aplicar tarifa especial
+    public void aplicarTarifa(reservaEntity reserva) {
+        // Lógica para aplicar tarifas especiales a la reserva
+        double tarifaXdia = obtenerTarifaXdia(reserva);
+        double precioTotal = reserva.getMontoTotal();
+        double precioConTarifa = precioTotal * tarifaXdia;
+        reserva.setMontoTotal(precioConTarifa);
+        reservaRepository.save(reserva);
+    }
 
     //Adquirir Descuentos
     public void aplicarDescuento(reservaEntity reserva) {
@@ -137,6 +150,74 @@ public class reservaService {
         }
 
         return descuentoXcumple;
+    }
+
+    //Tarifa para dias especiales
+    public Double obtenerTarifaXdia(reservaEntity reserva) {
+        double tarifaXdia;
+
+        // Obtener fecha de la reserva
+        Date fechaReserva = reserva.getFechaReserva();
+        LocalDate fechaReservaLocal = fechaReserva.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        // Comparar día y mes
+        if (fechaReservaLocal.getMonthValue() == 9 && fechaReservaLocal.getDayOfMonth() == 18) {
+            tarifaXdia = 1.5; // Tarifa especial para el 18 de septiembre
+        }
+        // Tarifa especial para el 1 de enero
+        else if (fechaReservaLocal.getMonthValue() == 1 && fechaReservaLocal.getDayOfMonth() == 1) {
+            tarifaXdia = 2.0; // Tarifa especial para el 1 de enero
+        }
+        // Tarifa especial para el 25 de diciembre
+        else if (fechaReservaLocal.getMonthValue() == 12 && fechaReservaLocal.getDayOfMonth() == 25) {
+            tarifaXdia = 2.5; // Tarifa especial para el 25 de diciembre
+        }
+        //Tarifa especial para dias Sabados y Domingos
+        else if (fechaReservaLocal.getDayOfWeek().getValue() == 6 || fechaReservaLocal.getDayOfWeek().getValue() == 7) {
+            tarifaXdia = 1.2; // Tarifa especial para fines de semana
+        } else {
+            tarifaXdia = 1.0; // Tarifa normal
+        }
+
+        return tarifaXdia;
+    }
+
+    public void generarComprobanteDesdeReserva(reservaEntity reserva) {
+        comprobanteEntity comprobante = new comprobanteEntity();
+
+        comprobante.setRutCliente(reserva.getRutCliente());
+        comprobante.setIdReserva(reserva.getIdReserva());
+        comprobante.setFechaEmision(new Date()); // Emisión actual
+        comprobante.setDescuento((int) (reserva.getDescuento() * 100)); // Si el descuento es 0.15 → 15%
+        comprobante.setMontoTotal((int) reserva.getMontoTotal());
+        comprobante.setEstado("Emitido");
+
+        comprobanteRepository.save(comprobante);
+    }
+
+    public reservaEntity confirmarReserva(Long idReserva) {
+        // 1. Buscar la reserva por su ID
+        Optional<reservaEntity> reservaOptional = reservaRepository.findById(idReserva);
+
+        if (reservaOptional.isEmpty()) {
+            throw new RuntimeException("Reserva no encontrada con ID: " + idReserva);
+        }
+
+        reservaEntity reserva = reservaOptional.get();
+
+        // 2. Aplicar descuento
+        aplicarDescuento(reserva);
+
+        // 3. Cambiar el estado a "CONFIRMADA"
+        reserva.setEstado("CONFIRMADA");
+
+        // 4. Guardar la reserva actualizada
+        reservaRepository.save(reserva);
+
+        // 5. Generar comprobante
+        generarComprobanteDesdeReserva(reserva);
+
+        return reserva;
     }
 
 
