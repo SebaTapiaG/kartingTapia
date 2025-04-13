@@ -41,6 +41,15 @@ public class clienteService {
         }
     }
 
+    public String getNombreCliente(String rut) {
+        Optional<clienteEntity> cliente = clienteRepository.findByRut(rut);
+        if (cliente.isPresent()) {
+            return cliente.get().getNombre();
+        } else {
+            throw new RuntimeException("Cliente no encontrado");
+        }
+    }
+
     public clienteEntity saveCliente(clienteEntity cliente) {
         return clienteRepository.save(cliente);
     }

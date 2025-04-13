@@ -22,9 +22,12 @@ public class comprobanteEntity {
     private long idComprobante;
 
     private String rutCliente;
-    private Long idReserva;
+    private String nombreCliente;
+    private long idReserva;
     private Date fechaEmision;
     private int descuento;
     private int montoTotal;
     private String estado;
+    private int cantVueltas;
+    private int tiempoMax;
 }

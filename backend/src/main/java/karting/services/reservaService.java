@@ -30,7 +30,29 @@ public class reservaService {
     @Autowired
     comprobanteRepository comprobanteRepository;
 
-    public void crearReserva(reservaEntity reserva) {
+    public reservaEntity crearReserva(String rut, Date fecha, Date hora, int cantidadPersonas, double montoTotal) {
+        reservaEntity reserva = new reservaEntity();
+        reserva.setRutCliente(rut);
+        reserva.setFechaReserva(fecha);
+        reserva.setHoraInicio(hora);
+        reserva.setCantidadPersonas(cantidadPersonas);
+        reserva.setMontoTotal(montoTotal);
+
+        // Asignar vueltas y tiempo máximo según el monto total
+        asignarVueltasYTiempo(reserva);
+
+        // Aplicar tarifa especial
+        aplicarTarifa(reserva);
+
+        // Aplicar descuentos
+        aplicarDescuento(reserva);
+
+        // Guardar la reserva
+        guardarReserva(reserva);
+        return reserva;
+    }
+
+    public void guardarReserva(reservaEntity reserva) {
         // Lógica para crear una reserva
         reservaRepository.save(reserva);
 
@@ -66,6 +88,31 @@ public class reservaService {
     public boolean deleteReserva(Long idReserva) {
         reservaRepository.deleteById(idReserva);
         return true;
+    }
+    //Asignar cantidad de vueltas y tiempo maximo segun el monto total
+    public void asignarVueltasYTiempo(reservaEntity reserva) {
+        double montoTotal = reserva.getMontoTotal();
+        int cantVueltas=0;
+        int tiempoMax=0;
+        int tiempoReserva=0;
+
+        if (montoTotal == 15000) {
+            cantVueltas = 10;
+            tiempoMax = 10;
+            tiempoReserva = 30;
+        } else if (montoTotal == 20000) {
+            cantVueltas = 15;
+            tiempoMax = 15;
+            tiempoReserva = 35;
+        } else if (montoTotal == 25000) {
+            cantVueltas = 20;
+            tiempoMax = 20;
+            tiempoReserva = 40;
+        }
+
+        reserva.setCantVueltas(cantVueltas);
+        reserva.setTiempoMax(tiempoMax);
+        reserva.setTiempoReserva(tiempoReserva);
     }
 
     //Aplicar tarifa especial
@@ -185,17 +232,21 @@ public class reservaService {
     public void generarComprobanteDesdeReserva(reservaEntity reserva) {
         comprobanteEntity comprobante = new comprobanteEntity();
 
-        comprobante.setRutCliente(reserva.getRutCliente());
+        String rutCliente = reserva.getRutCliente();
+        comprobante.setRutCliente(rutCliente);
+        comprobante.setNombreCliente(clienteService.getNombreCliente(rutCliente));
         comprobante.setIdReserva(reserva.getIdReserva());
         comprobante.setFechaEmision(new Date()); // Emisión actual
         comprobante.setDescuento((int) (reserva.getDescuento() * 100)); // Si el descuento es 0.15 → 15%
         comprobante.setMontoTotal((int) reserva.getMontoTotal());
         comprobante.setEstado("Emitido");
+        comprobante.setCantVueltas(reserva.getCantVueltas());
+        comprobante.setTiempoMax(reserva.getTiempoMax());
 
         comprobanteRepository.save(comprobante);
     }
 
-    public reservaEntity confirmarReserva(Long idReserva) {
+    public reservaEntity confirmarReserva(long idReserva) {
         // 1. Buscar la reserva por su ID
         Optional<reservaEntity> reservaOptional = reservaRepository.findById(idReserva);
 

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 
 import java.util.Date;
 
+
 @Entity
 @Table(name = "reserva")
 @Data
@@ -18,17 +19,18 @@ public class reservaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-
     private long idReserva;
 
     private String rutCliente;
-    private String idKart;
     private Date fechaReserva;
     private Date horaInicio;
-    private Date horaTermino;
     private int cantidadPersonas;
+    //private String rutPersonas; //Contiene los rut de las personas separadas por comas
     private double descuento;
     private double montoTotal;
+    private int cantVueltas;
+    private int tiempoMax;
+    private int tiempoReserva;
     private String estado;
 
 }

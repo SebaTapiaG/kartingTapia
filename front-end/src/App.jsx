@@ -1,34 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
 import './App.css'
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
+import Home from './components/home'
+import AddEditReserva from './components/AddEditReserva'
+import ListReserva from './components/ListReserva'
+import FormularioReserva from './components/FormularioReserva'
+import Navbar from './components/Navbar'
+
+
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <Router>
+      <div className="container">
+        <Navbar />
+        <h1>Reservas de Karting</h1>
+        <p>Bienvenido a la aplicación de reservas de karting. Aquí puedes agregar, editar y listar tus reservas.</p>
+        <p>Utiliza el menú de navegación para acceder a las diferentes secciones.</p>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/reservas/add" element={<AddEditReserva />} />
+          <Route path="/reservas/edit/:id" element={<AddEditReserva />} />
+          <Route path="/reservas/list" element={<ListReserva />} />
+          <Route path="/reservas/formulario/:id" element={<FormularioReserva />} />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </Router>
+   
+  
   )
 }
 
