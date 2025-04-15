@@ -30,13 +30,16 @@ public class reservaService {
     @Autowired
     comprobanteRepository comprobanteRepository;
 
-    public reservaEntity crearReserva(String rut, Date fecha, Date hora, int cantidadPersonas, double montoTotal) {
+    public reservaEntity crearReserva(String rut, Date fecha, int cantidadPersonas, double montoTotal) {
+        if (fecha == null) {
+            throw new IllegalArgumentException("La fecha no puede ser nula");
+        }
         reservaEntity reserva = new reservaEntity();
         reserva.setRutCliente(rut);
         reserva.setFechaReserva(fecha);
-        reserva.setHoraInicio(hora);
         reserva.setCantidadPersonas(cantidadPersonas);
         reserva.setMontoTotal(montoTotal);
+        reserva.setEstado("PENDIENTE");
 
         // Asignar vueltas y tiempo máximo según el monto total
         asignarVueltasYTiempo(reserva);

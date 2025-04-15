@@ -2,12 +2,13 @@ package karting.controllers;
 
 import karting.entities.reservaEntity;
 import karting.services.reservaService;
+import karting.Dtos.CrearReservaRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -27,29 +28,24 @@ public class reservaController {
         return reservaService.getReservaByIdReserva(idReserva);
     }
 
+    @PostMapping("/crear")
+    public reservaEntity crearReserva(@RequestBody CrearReservaRequest req) {
+        if (req.getFecha() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha no puede ser nula");
+        }
+        return reservaService.crearReserva(
+                req.getRut(),
+                req.getFecha(),
+                req.getCantidadPersonas(),
+                req.getMontoTotal()
+        );
+    }
+
+
     @PostMapping("/")
-    public ResponseEntity<ReservaResponse> crearReserva(@RequestBody CrearReservaRequest request) {
-        reservaEntity reservaCreada = reservaService.crearReserva(
-                request.getRut(),
-                request.getFecha(),
-                request.getHora(),
-                request.getCantidadPersonas(),
-                request.getMontoTotal()
-        );
-
-        ReservaResponse response = new ReservaResponse(
-                reservaCreada.getIdReserva(),
-                reservaCreada.getRutCliente(),
-                reservaCreada.getFechaReserva(),
-                reservaCreada.getHoraInicio(),
-                reservaCreada.getCantidadPersonas(),
-                reservaCreada.getMontoTotal(),
-                reservaCreada.getCantVueltas(),
-                reservaCreada.getTiempoMax(),
-                reservaCreada.getEstado()
-        );
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<reservaEntity> saveReserva(@RequestBody reservaEntity reserva) {
+        reservaEntity reservaNew = reservaService.saveReserva(reserva);
+        return ResponseEntity.ok(reservaNew);
     }
     
 
@@ -90,65 +86,4 @@ public class reservaController {
         return reservaService.deleteReserva(idReserva);
     }
 
-
-
-    // DTOs para request/response
-    public static class CrearReservaRequest {
-        private String rut;
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
-        private Date fecha;
-        @DateTimeFormat(pattern = "HH:mm:ss")
-        private Date hora;
-        private int cantidadPersonas;
-        private double montoTotal;
-
-        // Getters y Setters
-        public String getRut() { return rut; }
-        public void setRut(String rut) { this.rut = rut; }
-        public Date getFecha() { return fecha; }
-        public void setFecha(Date fecha) { this.fecha = fecha; }
-        public Date getHora() { return hora; }
-        public void setHora(Date hora) { this.hora = hora; }
-        public int getCantidadPersonas() { return cantidadPersonas; }
-        public void setCantidadPersonas(int cantidadPersonas) { this.cantidadPersonas = cantidadPersonas; }
-        public double getMontoTotal() { return montoTotal; }
-        public void setMontoTotal(double montoTotal) { this.montoTotal = montoTotal; }
-    }
-
-    public static class ReservaResponse {
-        private Long idReserva;
-        private String rutCliente;
-        private Date fechaReserva;
-        private Date horaInicio;
-        private int cantidadPersonas;
-        private double montoTotal;
-        private int cantVueltas;
-        private int tiempoMax;
-        private String estado;
-
-        public ReservaResponse(Long idReserva, String rutCliente, Date fechaReserva,
-                               Date horaInicio, int cantidadPersonas, double montoTotal,
-                               int cantVueltas, int tiempoMax, String estado) {
-            this.idReserva = idReserva;
-            this.rutCliente = rutCliente;
-            this.fechaReserva = fechaReserva;
-            this.horaInicio = horaInicio;
-            this.cantidadPersonas = cantidadPersonas;
-            this.montoTotal = montoTotal;
-            this.cantVueltas = cantVueltas;
-            this.tiempoMax = tiempoMax;
-            this.estado = estado;
-        }
-
-        // Getters
-        public Long getIdReserva() { return idReserva; }
-        public String getRutCliente() { return rutCliente; }
-        public Date getFechaReserva() { return fechaReserva; }
-        public Date getHoraInicio() { return horaInicio; }
-        public int getCantidadPersonas() { return cantidadPersonas; }
-        public double getMontoTotal() { return montoTotal; }
-        public int getCantVueltas() { return cantVueltas; }
-        public int getTiempoMax() { return tiempoMax; }
-        public String getEstado() { return estado; }
-    }
 }

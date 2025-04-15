@@ -22,8 +22,10 @@ public class reservaEntity {
     private long idReserva;
 
     private String rutCliente;
+
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaReserva;
-    private Date horaInicio;
+
     private int cantidadPersonas;
     //private String rutPersonas; //Contiene los rut de las personas separadas por comas
     private double descuento;

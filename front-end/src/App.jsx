@@ -6,6 +6,8 @@ import AddEditReserva from './components/AddEditReserva'
 import ListReserva from './components/ListReserva'
 import FormularioReserva from './components/FormularioReserva'
 import Navbar from './components/Navbar'
+import AddEditCliente from './components/AddEditCliente'
+import RackSemanal from './components/RackCalendar'
 
 
 
@@ -23,6 +25,10 @@ function App() {
           <Route path="/reservas/edit/:id" element={<AddEditReserva />} />
           <Route path="/reservas/list" element={<ListReserva />} />
           <Route path="/reservas/formulario/:id" element={<FormularioReserva />} />
+          <Route path="/clientes/add" element={<AddEditCliente />} />
+          <Route path="/clientes/edit/:id" element={<AddEditCliente />} />
+          <Route path="/rack" element={<RackSemanal />} />
+      
         </Routes>
       </div>
     </Router>

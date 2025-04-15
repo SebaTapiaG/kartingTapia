@@ -7,9 +7,7 @@ import { Box, Button, FormControl, TextField } from "@mui/material";
 const FormularioReserva = () => {
   const [reserva, setReserva] = useState({
     rutCliente: "",
-    idKart: "",
     fechaReserva: "",
-    horaInicio: "",
     cantidadPersonas: 0,
     montoTotal: 0,
     estado: "pendiente",
@@ -60,18 +58,6 @@ const FormularioReserva = () => {
           label="Fecha de Reserva"
         />
       </FormControl>
-
-      <FormControl fullWidth margin="normal">
-        <TextField
-          label="Hora Inicio"
-          type="time"
-          name="horaInicio"
-          value={reserva.horaInicio}
-          onChange={handleChange}
-          InputLabelProps={{ shrink: true }}
-        />
-      </FormControl>
-
       <FormControl fullWidth margin="normal">
         <TextField
           label="Cantidad de Personas"

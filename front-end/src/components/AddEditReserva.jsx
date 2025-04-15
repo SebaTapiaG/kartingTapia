@@ -16,7 +16,6 @@ const AddEditReserva = () => {
   const [reserva, setReserva] = useState({
     rutCliente: "",
     fechaReserva: "",
-    horaInicio: "",
     cantidadPersonas: 1,
     montoTotal: 0,
     estado: "PENDIENTE",
@@ -40,16 +39,22 @@ const AddEditReserva = () => {
 
   const saveReserva = (e) => {
     e.preventDefault();
+    const reservaData = {
+      ...reserva,
+      fechaReserva: `${reserva.fechaReserva}T${reserva.horaInicio}`,
+    };
     if (id) {
       reservaService.update(reserva).then(() => {
         navigate("/reservas/list");
       });
     } else {
-      reservaService.create(reserva).then(() => {
+      reservaService.createCustom(reserva).then(() => {
         navigate("/reservas/list");
       });
     }
   };
+  
+  
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" component="form">
@@ -68,25 +73,13 @@ const AddEditReserva = () => {
       <FormControl fullWidth sx={{ my: 1 }}>
         <TextField
           name="fechaReserva"
-          label="Fecha de Reserva"
-          type="date"
+          label="Fecha y Hora de Reserva"
+          type="datetime-local"
           value={reserva.fechaReserva}
           onChange={handleChange}
           variant="standard"
           InputLabelProps={{ shrink: true }}
-        />
-      </FormControl>
-
-      <FormControl fullWidth sx={{ my: 1 }}>
-        <TextField
-          name="horaInicio"
-          label="Hora de Inicio"
-          type="time"
-          value={reserva.horaInicio}
-          onChange={handleChange}
-          variant="standard"
-          InputLabelProps={{ shrink: true }}
-        />
+         />
       </FormControl>
 
       <FormControl fullWidth sx={{ my: 1 }}>
@@ -117,7 +110,7 @@ const AddEditReserva = () => {
           <MenuItem value={0}>0</MenuItem>
           <MenuItem value={15000}>15.000</MenuItem>
           <MenuItem value={20000}>20.000</MenuItem>
-          <MenuItem value={25000}>25n.000</MenuItem> {/* Corregido este valor */}
+          <MenuItem value={25000}>25.000</MenuItem> {/* Corregido este valor */}
         </Select>
       </FormControl>
 

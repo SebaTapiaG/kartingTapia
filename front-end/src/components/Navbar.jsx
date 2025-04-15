@@ -30,12 +30,19 @@ export default function Navbar() {
           <Button color="inherit" component={Link} to="/">
             Home
           </Button>
-          <Button color="inherit" component={Link} to="/reservas/list">
-            Listar Reservas
+          <Button color="inherit" component={Link} to="/clientes/add">
+            Agregar Cliente
           </Button>
           <Button color="inherit" component={Link} to="/reservas/add">
             Agregar Reserva
           </Button>
+          <Button color="inherit" component={Link} to="/reservas/list">
+            Listar Reservas
+          </Button>
+          <Button color="inherit" component={Link} to="/rack">
+            Rack Semanal
+          </Button>
+        
         </Toolbar>
       </AppBar>
     </Box>
