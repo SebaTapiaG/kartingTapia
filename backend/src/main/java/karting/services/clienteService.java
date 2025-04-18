@@ -50,6 +50,15 @@ public class clienteService {
         }
     }
 
+    public String getCorreoCliente(String rut) {
+        Optional<clienteEntity> cliente = clienteRepository.findByRut(rut);
+        if (cliente.isPresent()) {
+            return cliente.get().getCorreo();
+        } else {
+            throw new RuntimeException("Cliente no encontrado");
+        }
+    }
+
     public clienteEntity saveCliente(clienteEntity cliente) {
         return clienteRepository.save(cliente);
     }

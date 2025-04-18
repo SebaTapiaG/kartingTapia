@@ -68,6 +68,8 @@ public class reservaController {
             return ResponseEntity.ok(reservaConfirmada);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

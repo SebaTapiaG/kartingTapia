@@ -28,7 +28,8 @@ public class reservaService {
     clienteRepository clienteRepository;
 
     @Autowired
-    comprobanteRepository comprobanteRepository;
+    comprobanteService comprobanteService;
+
 
     public reservaEntity crearReserva(String rut, Date fecha, int cantidadPersonas, double montoTotal) {
         if (fecha == null) {
@@ -232,12 +233,13 @@ public class reservaService {
         return tarifaXdia;
     }
 
-    public void generarComprobanteDesdeReserva(reservaEntity reserva) {
+    public void generarComprobanteDesdeReserva(reservaEntity reserva) throws Exception {
         comprobanteEntity comprobante = new comprobanteEntity();
 
         String rutCliente = reserva.getRutCliente();
         comprobante.setRutCliente(rutCliente);
         comprobante.setNombreCliente(clienteService.getNombreCliente(rutCliente));
+        comprobante.setCorreoCliente(clienteService.getCorreoCliente(rutCliente));
         comprobante.setIdReserva(reserva.getIdReserva());
         comprobante.setFechaEmision(new Date()); // Emisión actual
         comprobante.setDescuento((int) (reserva.getDescuento() * 100)); // Si el descuento es 0.15 → 15%
@@ -246,10 +248,11 @@ public class reservaService {
         comprobante.setCantVueltas(reserva.getCantVueltas());
         comprobante.setTiempoMax(reserva.getTiempoMax());
 
-        comprobanteRepository.save(comprobante);
+        comprobanteService.saveComprobante(comprobante);
+
     }
 
-    public reservaEntity confirmarReserva(long idReserva) {
+    public reservaEntity confirmarReserva(long idReserva) throws Exception {
         // 1. Buscar la reserva por su ID
         Optional<reservaEntity> reservaOptional = reservaRepository.findById(idReserva);
 

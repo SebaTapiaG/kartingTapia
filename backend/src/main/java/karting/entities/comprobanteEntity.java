@@ -23,6 +23,7 @@ public class comprobanteEntity {
 
     private String rutCliente;
     private String nombreCliente;
+    private String correoCliente;
     private long idReserva;
     private Date fechaEmision;
     private int descuento;

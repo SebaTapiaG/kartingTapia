@@ -47,6 +47,18 @@ const confirmar = (id) => {
   return httpClient.put(`/reservas/confirmar/${id}`);
 };
 
+const obtenerReserva = (dia, hora) => {
+  return reservas.find(r => {
+    const fecha = new Date(r.fecha);
+    const diaReserva = fecha.getDay();
+    const horaReserva = fecha.getHours().toString().padStart(2, '0') + ':00';
+
+    const indexDia = dia === 'Domingo' ? 0 : diasSemana.indexOf(dia) + 1;
+
+    return diaReserva === indexDia && horaReserva === hora;
+  });
+};
+
 export default {
   getAll,
   get,
