@@ -42,6 +42,10 @@ export default function Navbar() {
           <Button color="inherit" component={Link} to="/rack">
             Rack Semanal
           </Button>
+
+          <Button color="inherit" component={Link} to="/reporte">
+            Reportes
+          </Button>
         
         </Toolbar>
       </AppBar>

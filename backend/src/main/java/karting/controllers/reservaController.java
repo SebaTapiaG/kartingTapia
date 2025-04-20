@@ -4,12 +4,16 @@ import karting.entities.reservaEntity;
 import karting.services.reservaService;
 import karting.Dtos.CrearReservaRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+
+import java.util.Date;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/v1/reservas")
@@ -27,6 +31,24 @@ public class reservaController {
     public reservaEntity getReservaByIdReserva(@PathVariable Long idReserva) {
         return reservaService.getReservaByIdReserva(idReserva);
     }
+
+    @GetMapping("/vueltas")
+    public ResponseEntity<?> reportePorVueltas(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date inicio,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fin) {
+
+        return ResponseEntity.ok(reservaService.obtenerIngresosPorVueltasYMese(inicio, fin));
+    }
+
+
+    @GetMapping("/personas")
+    public ResponseEntity<?> reportePorPersonas(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date inicio,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fin) {
+
+        return ResponseEntity.ok(reservaService.obtenerReporteAgrupado(inicio, fin));
+    }
+
 
     @PostMapping("/crear")
     public reservaEntity crearReserva(@RequestBody CrearReservaRequest req) {

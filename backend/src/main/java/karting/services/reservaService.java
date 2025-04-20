@@ -1,20 +1,21 @@
 package karting.services;
 
 
+import karting.Dtos.ReportePersonasDTO;
 import karting.entities.clienteEntity;
 import karting.entities.comprobanteEntity;
 import karting.entities.reservaEntity;
 import karting.repositories.clienteRepository;
-import karting.repositories.comprobanteRepository;
+
 import karting.repositories.reservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.time.format.TextStyle;
+import java.util.*;
 
 @Service
 public class reservaService {
@@ -276,6 +277,125 @@ public class reservaService {
 
         return reserva;
     }
+
+    public Map<String, Map<String, Double>> obtenerIngresosPorVueltasYMese(Date inicio, Date fin) {
+        List<reservaEntity> reservas = reservaRepository.findByFechaReservaBetween(inicio, fin);
+
+        Map<String, Map<String, Double>> resultado = new TreeMap<>();
+
+        // Inicializar todas las categorías posibles
+        String[] categorias = {
+                "10 vueltas o máx 10 min",
+                "15 vueltas o máx 15 min",
+                "20 vueltas o máx 20 min"
+        };
+
+        for (String categoria : categorias) {
+            resultado.put(categoria, new TreeMap<>());
+        }
+
+        // Agregar totales
+        resultado.put("TOTAL", new TreeMap<>());
+
+        for (reservaEntity reserva : reservas) {
+            int vueltas = reserva.getCantVueltas(); // o reserva.getTiempoMaximo()
+            double monto = reserva.getMontoTotal();
+
+            String categoria;
+            if (vueltas <= 10) categoria = "10 vueltas o máx 10 min";
+            else if (vueltas <= 15) categoria = "15 vueltas o máx 15 min";
+            else categoria = "20 vueltas o máx 20 min";
+
+            String mes = new SimpleDateFormat("MMMM yyyy", new Locale("es", "ES"))
+                    .format(reserva.getFechaReserva())
+                    .replace(" de ", " "); // Para formato "Enero 2024"
+
+            // Sumar a la categoría
+            resultado.get(categoria).merge(mes, monto, Double::sum);
+
+            // Sumar al total general
+            resultado.get("TOTAL").merge(mes, monto, Double::sum);
+        }
+
+        // Calcular totales por fila
+        for (Map.Entry<String, Map<String, Double>> entry : resultado.entrySet()) {
+            double totalCategoria = entry.getValue().values().stream().mapToDouble(Double::doubleValue).sum();
+            entry.getValue().put("TOTAL", totalCategoria);
+        }
+
+        return resultado;
+    }
+
+
+    public List<ReportePersonasDTO> obtenerReporteAgrupado(Date inicio, Date fin) {
+        Calendar calInicio = Calendar.getInstance();
+        calInicio.setTime(inicio);
+        calInicio.set(Calendar.HOUR_OF_DAY, 0);
+        calInicio.set(Calendar.MINUTE, 0);
+        calInicio.set(Calendar.SECOND, 0);
+        calInicio.set(Calendar.MILLISECOND, 0);
+
+        Calendar calFin = Calendar.getInstance();
+        calFin.setTime(fin);
+        calFin.set(Calendar.HOUR_OF_DAY, 23);
+        calFin.set(Calendar.MINUTE, 59);
+        calFin.set(Calendar.SECOND, 59);
+        calFin.set(Calendar.MILLISECOND, 999);
+
+        // Generar lista de meses entre inicio y fin
+        List<String> mesesTotales = new ArrayList<>();
+        Calendar calMes = (Calendar) calInicio.clone();
+        SimpleDateFormat formatoMes = new SimpleDateFormat("MMMM", new Locale("es", "ES"));
+        while (!calMes.after(calFin)) {
+            String mes = capitalize(formatoMes.format(calMes.getTime()));
+            if (!mesesTotales.contains(mes)) {
+                mesesTotales.add(mes);
+            }
+            calMes.add(Calendar.MONTH, 1);
+        }
+
+        List<reservaEntity> reservas = reservaRepository.findByFechaReservaBetween(inicio, fin);
+        Map<String, ReportePersonasDTO> reporteMap = new LinkedHashMap<>();
+
+        for (reservaEntity reserva : reservas) {
+            int cantidad = reserva.getCantidadPersonas();
+            String rango = obtenerRango(cantidad);
+            String mes = capitalize(formatoMes.format(reserva.getFechaReserva()));
+            double monto = reserva.getMontoTotal();
+
+            reporteMap.putIfAbsent(rango, new ReportePersonasDTO(rango));
+            reporteMap.get(rango).agregarMonto(mes, monto);
+        }
+
+        // Asegurar que cada DTO tenga todos los meses (con 0 si no hay datos)
+        for (String rango : getRangosPosibles()) {
+            ReportePersonasDTO dto = reporteMap.computeIfAbsent(rango, ReportePersonasDTO::new);
+            for (String mes : mesesTotales) {
+                dto.getMontosPorMes().putIfAbsent(mes, 0.0);
+            }
+        }
+
+        return new ArrayList<>(reporteMap.values());
+    }
+
+    private List<String> getRangosPosibles() {
+        return Arrays.asList("1-2 personas", "3-5 personas", "6-10 personas", "11-15 personas");
+    }
+
+    private String obtenerRango(int cantidad) {
+        if (cantidad <= 2) return "1-2 personas";
+        if (cantidad <= 5) return "3-5 personas";
+        if (cantidad <= 10) return "6-10 personas";
+        return "11-15 personas";
+    }
+
+    private String capitalize(String str) {
+        if (str == null || str.isEmpty()) return str;
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+
+
+
 
 
 }

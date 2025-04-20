@@ -8,6 +8,9 @@ import FormularioReserva from './components/FormularioReserva'
 import Navbar from './components/Navbar'
 import AddEditCliente from './components/AddEditCliente'
 import RackSemanal from './components/RackCalendar'
+import ReportePersonas from './components/ReportePersonas'
+import ReporteVueltas from './components/ReporteVueltas'
+import Reporte from './components/Reporte'
 
 
 
@@ -28,6 +31,9 @@ function App() {
           <Route path="/clientes/add" element={<AddEditCliente />} />
           <Route path="/clientes/edit/:id" element={<AddEditCliente />} />
           <Route path="/rack" element={<RackSemanal />} />
+          <Route path="/reporte" element={<Reporte />} />
+          <Route path="/reporte/personas" element={<ReportePersonas />} />
+          <Route path="/reporte/vueltas" element={<ReporteVueltas />} />
       
         </Routes>
       </div>

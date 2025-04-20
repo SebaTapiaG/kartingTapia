@@ -1,4 +1,4 @@
-package org.example.backend;
+package karting;
 
 import karting.BackendApplication;
 import org.junit.jupiter.api.Test;
