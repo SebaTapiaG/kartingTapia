@@ -1,6 +1,7 @@
 package karting.services;
 
 import karting.entities.clienteEntity;
+import karting.entities.comprobanteEntity;
 import karting.entities.reservaEntity;
 import karting.repositories.clienteRepository;
 import karting.repositories.reservaRepository;
@@ -30,6 +31,10 @@ class ReservaServiceTest {
     @Mock
     private clienteService clienteService;
 
+    @Mock
+    private comprobanteService comprobanteService;
+
+
 
     @BeforeEach
     void setUp() {
@@ -47,7 +52,11 @@ class ReservaServiceTest {
         clienteEntity cliente = new clienteEntity();
         cliente.setRut(rut);
         cliente.setCantidadReservas(1);
+        // Setear el cumpleaños igual a hoy
+        Date fechaCumple = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        cliente.setFechaNacimiento(fechaCumple);
         when(clienteRepository.findByRut(rut)).thenReturn(Optional.of(cliente));
+        when(clienteService.getFechaNacimiento(rut)).thenReturn(fechaCumple);
 
         // Act
         reservaEntity reserva = reservaService.crearReserva(rut, fecha, personas, monto);
@@ -81,8 +90,9 @@ class ReservaServiceTest {
         clienteEntity cliente = new clienteEntity();
         cliente.setRut(rut);
         cliente.setCantidadReservas(2);
-        cliente.setFechaNacimiento(new Date()); // Hoy es su cumpleaños
-
+        // Setear el cumpleaños igual a hoy
+        Date fechaCumple = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        cliente.setFechaNacimiento(fechaCumple);
         // Reserva mock
         reservaEntity reserva = new reservaEntity();
         reserva.setIdReserva(reservaId);
@@ -96,6 +106,11 @@ class ReservaServiceTest {
         // Mockeos
         when(reservaRepository.findById(reservaId)).thenReturn(Optional.of(reserva));
         when(clienteRepository.findByRut(rut)).thenReturn(Optional.of(cliente));
+        when(clienteService.getFechaNacimiento(rut)).thenReturn(fechaCumple);
+        when(comprobanteService.saveComprobante(any(comprobanteEntity.class)))
+                .thenReturn(new comprobanteEntity()); // ← ESTA ES LA CORRECTA
+
+
 
         // Act
         reservaService.confirmarReserva(reservaId);

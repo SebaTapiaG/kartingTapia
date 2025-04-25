@@ -1,0 +1,105 @@
+
+
+services:
+  # Frontend services
+  frontend1:
+    image: sebatapiag/frontend-image:latest  # Usa tu imagen de frontend
+    networks:
+      - frontend-network
+    environment:
+      - VITE_BACKEND_SERVER=backend
+      - VITE_BACKEND_PORT=9090
+
+  frontend2:
+    image: sebatapiag/frontend-image:latest  # Usa tu imagen de frontend
+    networks:
+      - frontend-network
+    environment:
+      - VITE_BACKEND_SERVER=nbackend
+      - VITE_BACKEND_PORT=9090
+
+  frontend3:
+    image: sebatapiag/frontend-image:latest  # Usa tu imagen de frontend
+    networks:
+      - frontend-network
+    environment:
+      - VITE_BACKEND_SERVER=backend
+      - VITE_BACKEND_PORT=9090
+
+  # Backend services
+  backend1:
+    image: sebatapiag/backend-image:latest  # Usa tu imagen de backend
+    environment:
+      - DB_HOST=postgres  # Nombre del servicio de PostgreSQL
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=clave
+      - DB_NAME=karting
+    networks:
+      - backend-network
+
+  backend2:
+    image: sebatapiag/backend-image:latest  # Usa tu imagen de backend
+    environment:
+      - DB_HOST=postgres  # Nombre del servicio de PostgreSQL
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=clave
+      - DB_NAME=karting
+    networks:
+      - backend-network
+
+  backend3:
+    image: sebatapiag/backend-image:latest  # Usa tu imagen de backend
+    environment:
+      - DB_HOST=postgres  # Nombre del servicio de PostgreSQL
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=clave
+      - DB_NAME=karting
+    networks:
+      - backend-network
+
+  # PostgreSQL service
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: clave
+      POSTGRES_DB: karting
+    ports:
+      - "5432:5432"
+    networks:
+      - backend-network
+
+  # Nginx for frontend load balancing
+  nginx-frontend:
+    image: nginx:latest
+    ports:
+      - "8070:80"
+    volumes:
+      - ./nginx/nginx-frontend.conf:/etc/nginx/nginx.conf  # Volumen con la configuración frontend
+    depends_on:
+      - frontend1
+      - frontend2
+      - frontend3
+    networks:
+      - frontend-network
+
+  # Nginx for backend load balancing
+  nginx-backend:
+    image: nginx:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./nginx/nginx-backend.conf:/etc/nginx/nginx.conf  # Volumen con la configuración backend
+    depends_on:
+      - backend1
+      - backend2
+      - backend3
+    networks:
+      - backend-network
+
+networks:
+  frontend-network:
+  backend-network:

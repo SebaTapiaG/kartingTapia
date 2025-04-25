@@ -1,7 +1,12 @@
 import axios from "axios";
 
+// Obtiene las variables de entorno en tiempo de ejecución (definidas al compilar con Vite)
+const server = import.meta.env.VITE_BACKEND_SERVER || "localhost";
+const port = import.meta.env.VITE_BACKEND_PORT || "9090";
+const baseURL = `http://${server}:${port}/api/v1`;
+
 export default axios.create({
-  baseURL: "http://localhost:9090/api/v1", // Backend URL
+  baseURL,
   headers: {
     "Content-type": "application/json",
   },

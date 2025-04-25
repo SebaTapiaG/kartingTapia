@@ -127,7 +127,6 @@ public class reservaService {
         double precioTotal = reserva.getMontoTotal();
         double precioConTarifa = precioTotal * tarifaXdia;
         reserva.setMontoTotal(precioConTarifa);
-        reservaRepository.save(reserva);
     }
 
     //Adquirir Descuentos
@@ -144,7 +143,6 @@ public class reservaService {
         double precioConDescuento = precioTotal - (precioTotal * descuentoMayor);
         reserva.setMontoTotal(precioConDescuento);
         reserva.setDescuento(descuentoMayor);
-        reservaRepository.save(reserva);
     }
 
     //Descuento por numero de personas

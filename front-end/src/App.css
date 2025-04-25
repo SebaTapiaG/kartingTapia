@@ -1,3 +1,4 @@
+/* Estilos generales de la aplicación */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -5,6 +6,7 @@
   text-align: center;
 }
 
+/* Estilos para el logo */
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -18,6 +20,7 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+/* Animación del logo */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -33,10 +36,63 @@
   }
 }
 
+/* Estilos para cards */
 .card {
   padding: 2em;
 }
 
 .read-the-docs {
   color: #888;
+}
+
+/* Nuevos estilos para la vista Home */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.home-container .text-content {
+  text-align: center;
+  max-width: 800px;
+}
+
+.home-container .image-container {
+  width: 100%;
+  max-width: 800px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.home-container .image-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.home-container .karting-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.home-container .karting-image:hover {
+  transform: scale(1.02);
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .home-container {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+  
+  .home-container .text-content {
+    max-width: 100%;
+  }
 }

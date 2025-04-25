@@ -1,7 +1,7 @@
 
 import './App.css'
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
-import Home from './components/home'
+import Home from './components/Home'
 import AddEditReserva from './components/AddEditReserva'
 import ListReserva from './components/ListReserva'
 import FormularioReserva from './components/FormularioReserva'
@@ -19,9 +19,7 @@ function App() {
     <Router>
       <div className="container">
         <Navbar />
-        <h1>Reservas de Karting</h1>
-        <p>Bienvenido a la aplicación de reservas de karting. Aquí puedes agregar, editar y listar tus reservas.</p>
-        <p>Utiliza el menú de navegación para acceder a las diferentes secciones.</p>
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/reservas/add" element={<AddEditReserva />} />
