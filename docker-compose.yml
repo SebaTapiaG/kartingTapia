@@ -6,24 +6,27 @@ services:
     image: sebatapiag/frontend-image:latest  # Usa tu imagen de frontend
     networks:
       - frontend-network
+      - backend-network
     environment:
-      - VITE_BACKEND_SERVER=backend
+      - VITE_BACKEND_SERVER=nginx-backend
       - VITE_BACKEND_PORT=9090
 
   frontend2:
     image: sebatapiag/frontend-image:latest  # Usa tu imagen de frontend
     networks:
       - frontend-network
+      - backend-network
     environment:
-      - VITE_BACKEND_SERVER=nbackend
+      - VITE_BACKEND_SERVER=nginx-backend
       - VITE_BACKEND_PORT=9090
 
   frontend3:
     image: sebatapiag/frontend-image:latest  # Usa tu imagen de frontend
     networks:
       - frontend-network
+      - backend-network
     environment:
-      - VITE_BACKEND_SERVER=backend
+      - VITE_BACKEND_SERVER=nginx-backend
       - VITE_BACKEND_PORT=9090
 
   # Backend services
