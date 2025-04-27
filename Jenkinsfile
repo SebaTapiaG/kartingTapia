@@ -45,14 +45,18 @@ pipeline {
             steps {
                 dir("backend") {
                     script {
-                        withDockerRegistry(credentialsId: 'docker-credentials') {
-                            bat "docker build -t sebatapiag/backend-image . > build_log.txt 2>&1"
-                            bat "docker push sebatapiag/backend-image >> build_log.txt 2>&1"
+                         withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    bat """
+                        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+                    """
+                }
 
-                        }
-                    }
+                // Construir y empujar la imagen
+                bat "docker build -t sebatapiag/backend-image ."
+                bat "docker push sebatapiag/backend-image"
                 }
             }
         }
     }
+}
 }
