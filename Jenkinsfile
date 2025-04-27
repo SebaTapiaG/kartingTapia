@@ -4,6 +4,14 @@ pipeline{
         maven "maven"
 
     }
+      environment {
+        // Configuración de la base de datos para pruebas
+        DB_HOST = 'postgres' // o la IP de tu contenedor PostgreSQL si usas Docker
+        DB_PORT = '5432'
+        DB_NAME = 'karting'
+        DB_USER = 'postgres' // usuario de tu base de datos
+        DB_PASSWORD = 'clave' // contraseña de tu base de datos
+    }
     stages{
         stage("Build JAR File"){
             steps{
