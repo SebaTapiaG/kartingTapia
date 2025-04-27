@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://kart-app.brazilsouth.cloudapp.azure.com/api/v1/reservas';
+const API_URL = 'http://kart-app.brazilsouth.cloudapp.azure.com:9090/api/v1/reservas';
 
 const crearReserva = (reserva) => {
   return axios.post(`${API_URL}/crear`, reserva);
