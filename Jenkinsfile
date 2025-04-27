@@ -1,42 +1,55 @@
-pipeline{
+pipeline {
     agent any
-    tools{
-        maven "maven"
 
+    tools {
+        maven "maven"
     }
-      environment {
-        // Configuración de la base de datos para pruebas
-        DB_HOST = 'postgres' // o la IP de tu contenedor PostgreSQL si usas Docker
+
+    environment {
+        // Variables de base de datos (por si tu app las necesita en runtime)
+        DB_HOST = 'postgres'
         DB_PORT = '5432'
         DB_NAME = 'karting'
-        DB_USER = 'postgres' // usuario de tu base de datos
-        DB_PASSWORD = 'clave' // contraseña de tu base de datos
+        DB_USER = 'postgres'
+        DB_PASSWORD = 'clave'
     }
-    stages{
-        stage("Build JAR File"){
-            steps{
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/SebaTapiaG/kartingTapia']])
-                dir("backend"){
-                    bat "mvn clean install"
+
+    stages {
+        stage("Checkout Code") {
+            steps {
+                checkout scmGit(
+                    branches: [[name: 'main']],  // Puedes dejarlo así si es solo 'main'
+                    extensions: [],
+                    userRemoteConfigs: [[url: 'https://github.com/SebaTapiaG/kartingTapia']]
+                )
+            }
+        }
+
+        stage("Build JAR File") {
+            steps {
+                dir("backend") { // Entra al backend
+                    bat "mvn clean install" // Compila
                 }
             }
         }
-        stage("Test"){
-            steps{
-                dir("backend"){
-                    bat "mvn test"
+
+        stage("Test") {
+            steps {
+                dir("backend") {
+                    bat "mvn test" // Corre tests
                 }
             }
-        }        
-        stage("Build and Push Docker Image"){
-            steps{
-                dir("backend"){
-                    script{
-                         withDockerRegistry(credentialsId: 'docker-credentials'){
-                            bat "docker build -t sebatapiag/backend-image ."
-                            bat "docker push sebatapiag/backend-image ."
+        }
+
+        stage("Build and Push Docker Image") {
+            steps {
+                dir("backend") {
+                    script {
+                        withDockerRegistry(credentialsId: 'docker-credentials') {
+                            bat "docker build -t sebatapiag/backend-image ." // Construye imagen
+                            bat "docker push sebatapiag/backend-image" // Empuja imagen (sin el punto final)
                         }
-                    }                    
+                    }
                 }
             }
         }
