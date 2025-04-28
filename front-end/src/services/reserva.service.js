@@ -1,36 +1,70 @@
-import axios from 'axios';
+import httpClient from "../http-common.js"; // Base URL: http://localhost:9090/api/v1
 
-const API_URL = 'http://kart-app.brazilsouth.cloudapp.azure.com:9090/api/v1/reservas';
-
-const crearReserva = (reserva) => {
-  return axios.post(`${API_URL}/crear`, reserva);
+const getAll = () => {
+  return httpClient.get("/reservas/");
 };
 
-const obtenerReservas = () => {
-  return axios.get(`${API_URL}/listar`);  // Solo si tienes un endpoint para listar las reservas
+const get = (id) => {
+  return httpClient.get(`/reservas/${id}`);
 };
 
-const obtenerReservaPorId = (id) => {
-  return axios.get(`${API_URL}/buscar/${id}`);  // Solo si tienes un endpoint para obtener por ID
+const createCustom = (reservaData) => {
+  let fechaEnviar;
+
+  if (reservaData.fechaReserva instanceof Date) {
+    fechaEnviar = reservaData.fechaReserva.toISOString();
+  } else if (typeof reservaData.fechaReserva === 'string') {
+    fechaEnviar = new Date(reservaData.fechaReserva).toISOString();
+  } else {
+    fechaEnviar = new Date().toISOString();
+  }
+
+  const data = {
+    rut: reservaData.rutCliente,
+    fecha: fechaEnviar,
+    cantidadPersonas: parseInt(reservaData.cantidadPersonas),
+    montoTotal: reservaData.montoTotal
+  };
+
+  console.log('Datos a enviar:', data);
+  return httpClient.post("/reservas/crear", data);
 };
 
-const actualizarReserva = (reserva) => {
-  return axios.put(`${API_URL}/actualizar`, reserva); // Endpoint para actualizar
+
+const create = (reserva) => {
+  return httpClient.post("/reservas/", reserva);
 };
 
-const eliminarReserva = (id) => {
-  return axios.delete(`${API_URL}/eliminar/${id}`); // Endpoint para eliminar
+const update = (reserva) => {
+  return httpClient.put("/reservas/", reserva);
 };
 
-const confirmarReserva = (id) => {
-  return axios.put(`${API_URL}/confirmar/${id}`); // Endpoint para confirmar reserva
+const eliminar = (id) => {
+  return httpClient.delete(`/reservas/${id}`);
+};
+
+const confirmar = (id) => {
+  return httpClient.put(`/reservas/confirmar/${id}`);
+};
+
+const obtenerReserva = (dia, hora) => {
+  return reservas.find(r => {
+    const fecha = new Date(r.fecha);
+    const diaReserva = fecha.getDay();
+    const horaReserva = fecha.getHours().toString().padStart(2, '0') + ':00';
+
+    const indexDia = dia === 'Domingo' ? 0 : diasSemana.indexOf(dia) + 1;
+
+    return diaReserva === indexDia && horaReserva === hora;
+  });
 };
 
 export default {
-  crearReserva,
-  obtenerReservas,
-  obtenerReservaPorId,
-  actualizarReserva,
-  eliminarReserva,
-  confirmarReserva
+  getAll,
+  get,
+  create,
+  createCustom,
+  update,
+  eliminar,
+  confirmar,
 };
