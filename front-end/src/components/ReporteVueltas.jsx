@@ -19,7 +19,7 @@ const ReporteVueltas = () => {
     setCargando(true)
     try {
       const response = await axios.get(
-        `http://localhost:9090/api/v1/reservas/vueltas`,
+        `http://kart-app.brazilsouth.cloudapp.azure.com:9090/api/v1/reservas/vueltas`,
         {
           params: {
             inicio: getFechaInicio(),

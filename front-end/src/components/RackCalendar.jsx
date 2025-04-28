@@ -14,7 +14,7 @@ const RackSemanal = () => {
   const [reservas, setReservas] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:9090/api/v1/reservas/')
+    axios.get('http://kart-app.brazilsouth.cloudapp.azure.com:9090/api/v1/reservas/')
       .then(response => {
         console.log("Reservas recibidas:", response.data); // Debug
         setReservas(response.data);

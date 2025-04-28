@@ -17,7 +17,7 @@ const ReportePersonas = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:9090/api/v1/reservas/personas?inicio=${getFechaInicio()}&fin=${getFechaFin()}`
+        `http://kart-app.brazilsouth.cloudapp.azure.com:9090/api/v1/reservas/personas?inicio=${getFechaInicio()}&fin=${getFechaFin()}`
       )
       if (Array.isArray(response.data)) {
         setDatos(response.data)
