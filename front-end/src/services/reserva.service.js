@@ -1,4 +1,4 @@
-import httpClient from "../http-common.js"; // Base URL: http://localhost:9090/api/v1
+import httpClient from "../http-common.js"; // 
 
 const getAll = () => {
   return httpClient.get("/reservas/");
