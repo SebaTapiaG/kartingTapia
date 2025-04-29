@@ -1,5 +1,6 @@
 package karting.services;
 
+import karting.Dtos.ReportePersonasDTO;
 import karting.entities.clienteEntity;
 import karting.entities.comprobanteEntity;
 import karting.entities.reservaEntity;
@@ -354,5 +355,96 @@ class ReservaServiceTest {
         assertEquals(0.0, reserva.getDescuento());
     }
 
+    private Date createDate(int year, int month, int day) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month - 1, day, 0, 0, 0); // Mes -1 porque en Calendar enero=0
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    @Test
+    void testObtenerIngresosPorVueltasYMese() {
+        // Arrange
+        Date inicio = createDate(2024, 1, 1);
+        Date fin = createDate(2024, 3, 31);
+
+        reservaEntity reserva1 = new reservaEntity();
+        reserva1.setCantVueltas(10);
+        reserva1.setMontoTotal(100.0);
+        reserva1.setFechaReserva(createDate(2024, 1, 15));
+
+        reservaEntity reserva2 = new reservaEntity();
+        reserva2.setCantVueltas(15);
+        reserva2.setMontoTotal(150.0);
+        reserva2.setFechaReserva(createDate(2024, 2, 10));
+
+        reservaEntity reserva3 = new reservaEntity();
+        reserva3.setCantVueltas(20);
+        reserva3.setMontoTotal(200.0);
+        reserva3.setFechaReserva(createDate(2024, 3, 5));
+
+        when(reservaRepository.findByFechaReservaBetween(inicio, fin))
+                .thenReturn(Arrays.asList(reserva1, reserva2, reserva3));
+
+        // Act
+        Map<String, Map<String, Double>> resultado = reservaService.obtenerIngresosPorVueltasYMese(inicio, fin);
+
+        // Assert
+        assertNotNull(resultado);
+        assertTrue(resultado.containsKey("10 vueltas o máx 10 min"));
+        assertTrue(resultado.containsKey("15 vueltas o máx 15 min"));
+        assertTrue(resultado.containsKey("20 vueltas o máx 20 min"));
+        assertTrue(resultado.containsKey("TOTAL"));
+
+        // Validar montos por categoría
+        assertEquals(100.0, resultado.get("10 vueltas o máx 10 min").get("enero 2024"), 0.01);
+        assertEquals(150.0, resultado.get("15 vueltas o máx 15 min").get("febrero 2024"), 0.01);
+        assertEquals(200.0, resultado.get("20 vueltas o máx 20 min").get("marzo 2024"), 0.01);
+
+        // Validar montos totales
+        assertEquals(100.0, resultado.get("TOTAL").get("enero 2024"), 0.01);
+        assertEquals(150.0, resultado.get("TOTAL").get("febrero 2024"), 0.01);
+        assertEquals(200.0, resultado.get("TOTAL").get("marzo 2024"), 0.01);
+
+        verify(reservaRepository, times(1)).findByFechaReservaBetween(inicio, fin);
+    }
+
+    @Test
+    void testObtenerReporteAgrupado() {
+        // Arrange
+        Date inicio = createDate(2024, 1, 1);
+        Date fin = createDate(2024, 1, 31);
+
+        reservaEntity reserva1 = new reservaEntity();
+        reserva1.setCantidadPersonas(2);
+        reserva1.setMontoTotal(100.0);
+        reserva1.setFechaReserva(createDate(2024, 1, 5));
+
+        reservaEntity reserva2 = new reservaEntity();
+        reserva2.setCantidadPersonas(5);
+        reserva2.setMontoTotal(200.0);
+        reserva2.setFechaReserva(createDate(2024, 1, 20));
+
+        when(reservaRepository.findByFechaReservaBetween(inicio, fin))
+                .thenReturn(Arrays.asList(reserva1, reserva2));
+
+        // Act
+        List<ReportePersonasDTO> resultado = reservaService.obtenerReporteAgrupado(inicio, fin);
+
+        // Assert
+        assertNotNull(resultado);
+        assertFalse(resultado.isEmpty());
+
+        Set<String> rangos = new HashSet<>();
+        for (ReportePersonasDTO dto : resultado) {
+            rangos.add(dto.getRango());
+        }
+
+        assertTrue(rangos.contains("1-2 personas"));
+        assertTrue(rangos.contains("3-5 personas"));
+
+
+        verify(reservaRepository, times(1)).findByFechaReservaBetween(inicio, fin);
+    }
 }
 
