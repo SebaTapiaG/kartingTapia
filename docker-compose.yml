@@ -74,6 +74,8 @@ services:
       - "5432:5432"
     networks:
       - backend-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   # Nginx for frontend load balancing
   nginx-frontend:
@@ -106,3 +108,6 @@ services:
 networks:
   frontend-network:
   backend-network:
+
+volumes:
+  postgres_data:
