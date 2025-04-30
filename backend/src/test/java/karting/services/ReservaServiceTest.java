@@ -43,6 +43,61 @@ class ReservaServiceTest {
     }
 
     @Test
+    void testGetReservas() {
+        reservaEntity r1 = new reservaEntity();
+        reservaEntity r2 = new reservaEntity();
+
+        when(reservaRepository.findAll()).thenReturn(Arrays.asList(r1, r2));
+
+        List<reservaEntity> result = reservaService.getReservas();
+        assertEquals(2, result.size());
+        verify(reservaRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetReservaByIdReserva() {
+        reservaEntity reserva = new reservaEntity();
+        reserva.setIdReserva(1L);
+
+        when(reservaRepository.findByIdReserva(1L)).thenReturn(reserva);
+
+        reservaEntity result = reservaService.getReservaByIdReserva(1L);
+        assertNotNull(result);
+        assertEquals(1L, result.getIdReserva());
+        verify(reservaRepository).findByIdReserva(1L);
+    }
+
+    @Test
+    void testSaveReserva() {
+        reservaEntity reserva = new reservaEntity();
+        when(reservaRepository.save(reserva)).thenReturn(reserva);
+
+        reservaEntity result = reservaService.saveReserva(reserva);
+        assertNotNull(result);
+        verify(reservaRepository).save(reserva);
+    }
+
+    @Test
+    void testUpdateReserva() {
+        reservaEntity reserva = new reservaEntity();
+        when(reservaRepository.save(reserva)).thenReturn(reserva);
+
+        reservaEntity result = reservaService.updateReserva(reserva);
+        assertNotNull(result);
+        verify(reservaRepository).save(reserva);
+    }
+
+    @Test
+    void testDeleteReserva() {
+        Long id = 1L;
+
+        doNothing().when(reservaRepository).deleteById(id);
+
+        boolean result = reservaService.deleteReserva(id);
+        assertTrue(result);
+        verify(reservaRepository).deleteById(id);
+    }
+    @Test
     void crearReserva_DeberiaGuardarReservaCorrectamente() {
         // Arrange
         String rut = "12345678-9";
@@ -445,6 +500,31 @@ class ReservaServiceTest {
 
 
         verify(reservaRepository, times(1)).findByFechaReservaBetween(inicio, fin);
+    }
+
+    @Test
+    void testGetRangosPosibles() {
+        List<String> rangos = reservaService.getRangosPosibles();
+        assertEquals(4, rangos.size());
+        assertTrue(rangos.contains("1-2 personas"));
+        assertTrue(rangos.contains("11-15 personas"));
+    }
+
+    @Test
+    void testObtenerRango() {
+        assertEquals("1-2 personas", reservaService.obtenerRango(1));
+        assertEquals("1-2 personas", reservaService.obtenerRango(2));
+        assertEquals("3-5 personas", reservaService.obtenerRango(3));
+        assertEquals("6-10 personas", reservaService.obtenerRango(10));
+        assertEquals("11-15 personas", reservaService.obtenerRango(11));
+    }
+
+    @Test
+    void testCapitalize() {
+        assertEquals("Hola", reservaService.capitalize("hola"));
+        assertEquals("Hola", reservaService.capitalize("HOLA"));
+        assertEquals("", reservaService.capitalize(""));
+        assertNull(reservaService.capitalize(null));
     }
 }
 

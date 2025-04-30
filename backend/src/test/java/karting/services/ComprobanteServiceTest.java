@@ -91,6 +91,7 @@ public class ComprobanteServiceTest {
         assertTrue(pdf.length > 0);
     }
 
+
     @Test
     void testEnviarComprobantePorCorreo() throws Exception {
         // Arrange: Crear un comprobante con datos necesarios

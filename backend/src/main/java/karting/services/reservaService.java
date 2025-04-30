@@ -376,18 +376,18 @@ public class reservaService {
         return new ArrayList<>(reporteMap.values());
     }
 
-    private List<String> getRangosPosibles() {
+    public List<String> getRangosPosibles() {
         return Arrays.asList("1-2 personas", "3-5 personas", "6-10 personas", "11-15 personas");
     }
 
-    private String obtenerRango(int cantidad) {
+    public String obtenerRango(int cantidad) {
         if (cantidad <= 2) return "1-2 personas";
         if (cantidad <= 5) return "3-5 personas";
         if (cantidad <= 10) return "6-10 personas";
         return "11-15 personas";
     }
 
-    private String capitalize(String str) {
+    public String capitalize(String str) {
         if (str == null || str.isEmpty()) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }

@@ -103,7 +103,7 @@ public class comprobanteService {
 
         table.addCell(comprobante.getNombreCliente());
         table.addCell("$" + tarifaBase);
-        table.addCell("$" + descuentoGrupo);
+        table.addCell(descuentoGrupo + "%");
         table.addCell("$" + descuentoPromo);
         table.addCell("$" + (int) iva);
         table.addCell("$" + total);
