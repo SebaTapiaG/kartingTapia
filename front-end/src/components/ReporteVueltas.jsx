@@ -96,7 +96,7 @@ const ReporteVueltas = () => {
 
   return (
     <div className="bg-gray-100 p-4 rounded-md shadow mb-8">
-      <h2 className="text-xl font-bold mb-4">Reporte por Vueltas o Tiempo Máximo</h2>
+      <h2 className="text-xl font-bold mb-4">Reporte por Vueltas</h2>
 
       <div className="flex items-center gap-4 mb-4">
         <label>Inicio: </label>
